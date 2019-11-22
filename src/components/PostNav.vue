@@ -11,8 +11,8 @@
           <label class="accordion-header c-hand" :for="'category-toggle-' + cid"><i class="icon icon-arrow-right mr-1"></i>{{ category }}</label>
           <div class="accordion-body">
             <ul class="menu menu-nav">
-              <li class="menu-item" v-for="(post, pid) of posts[category]" :key="'post-' + cid + '-' + pid">
-                <router-link :to="'/' + pid">{{ post.title }}</router-link>
+              <li class="menu-item" v-for="(post, pid) of posts.filter(post => post.category === category)" :key="'post-' + cid + '-' + pid">
+                <router-link :to="'/' + post.id">{{ post.title }}</router-link>
               </li>
             </ul>
           </div>
@@ -30,9 +30,16 @@ export default {
   name: 'PostNav',
   data: function () {
     return {
-      posts: PostService.getPosts(),
-      categories: PostService.getCategories()
+      posts: null,
+      categories: null,
     }
+  },
+  async created () {
+    PostService.getIndex().then(data => {
+      data = data.body
+      this.posts = data.posts
+      this.categories = data.categories
+    })
   }
 }
 </script>
